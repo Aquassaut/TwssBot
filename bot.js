@@ -3,7 +3,7 @@ var irc = require('node-irc');
 var fs = require('fs');
 var channel = '#paume';
 var on = true;
-var lastMsg = "";
+var lastMsg = '';
 
 twss.threshold = 0.5;
 
@@ -39,16 +39,17 @@ function quit(from) {
 
 function storeData(pos, msg) {
     //Prefix hack to keep it short.
+    msg = (msg !== '' ? msg : lastMsg);
     var prefix = (pos ? 'posi' : 'nega');
     var file = 'node_modules/twss/data/' + prefix + 'tive.js';
-    var message = '\nexports.data.push("' + (msg !== '' ? msg : lastMsg) + '");';
+    var message = '\nexports.data.push("' + msg + '");';
     fs.appendFile(file, message, function (err) {
         if (err) { throw err; }
-        bot.log(lastMsg + ' ajouté à la liste ' + prefix + 'tive !');
+        bot.log(msg + ' ajouté à la liste ' + prefix + 'tive !');
     });
-    twss.trainingData[prefix.slice(0, 3)].push(lastMsg);
-    client.say(channel, "Correction enregistrée : " + lastMsg);
-    bot.log(prefix + ': ' + lastMsg);
+    twss.trainingData[prefix.slice(0, 3)].push(msg);
+    client.say(channel, 'Addition validée : ' + msg);
+    bot.log(prefix + ': ' + msg);
 }
 
 /**
@@ -68,7 +69,7 @@ function setOn(bool) {
 function process(msg) {
     var p = Math.round(100 * twss.prob(msg));
     var t = "THAT'S WHAT SHE SAID ! (c'est sur à " + p + "% !)";
-    bot.log(msg + " -> " + p + "%");
+    bot.log(msg + ' -> ' + p + '%');
     if (twss.is(msg)) {
         client.say(channel, t);
     }
@@ -86,7 +87,7 @@ function ev(cmd) {
         client.say(channel, eval(cmd));
     } catch (e) {
         console.log(e);
-        client.say(channel, "Invalide : " + cmd);
+        client.say(channel, 'Invalide : ' + cmd);
     }
 }
 
@@ -147,8 +148,9 @@ client.addListener('message', function(from, to, message) {
     };
     for(var elem in dispatch) {
         if (dispatch.hasOwnProperty(elem) && elem === message.slice(0, elem.length)) {
-            //If the command is valid
-                dispatch[message](message.slice(elem.length));
+            //If the command is valid, validate it and send rest of message
+            //starting from the first non whitespace character
+                dispatch[elem](message.slice(elem.length + 1));
                 lastMsg = message;
                 return;
         }
