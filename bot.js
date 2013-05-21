@@ -40,6 +40,7 @@ function quit(from) {
 function storeData(pos, msg) {
     //Prefix hack to keep it short.
     msg = (msg !== '' ? msg : lastMsg);
+    msg = msg.replace(/"/g, '`');
     var prefix = (pos ? 'posi' : 'nega');
     var file = 'node_modules/twss/data/' + prefix + 'tive.js';
     var message = '\nexports.data.push("' + msg + '");';
