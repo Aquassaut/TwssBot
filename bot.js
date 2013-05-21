@@ -62,6 +62,15 @@ function setOn(bool) {
 }
 
 /**
+ *  Custom match ing rule, otherwise unrelated to the project
+ */
+
+function matchIUT (phrase) {
+    var reg = /i\.?u\.?t\.?/i;
+    return reg.test(phrase);
+};
+
+/**
  *  Finds out whether a sentence is TWSS worthy and prints a message to the channel
  *  if it is
  */
@@ -70,7 +79,9 @@ function process(msg) {
     var p = Math.round(100 * twss.prob(msg));
     var t = "THAT'S WHAT SHE SAID ! (c'est sur à " + p + "% !)";
     bot.log(msg + ' -> ' + p + '%');
-    if (twss.is(msg)) {
+    if (matchIUT(msg)) {
+        client.say(channel, "C'EST NORMAAAAAL A L'IUTTTTTTT");
+    } else if (twss.is(msg)) {
         client.say(channel, t);
     }
 }
